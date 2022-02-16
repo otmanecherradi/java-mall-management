@@ -18,9 +18,7 @@ public class App {
 
       do {
         showMenu();
-
         menuOption = getOption();
-
         dispatchAction(menuOption);
       } while (!menuOption.equals(MenuOptions.Quit));
 
