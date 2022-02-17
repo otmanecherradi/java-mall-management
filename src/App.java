@@ -7,8 +7,9 @@ public class App {
 
   static MenuOptions menuOption;
 
-  public static void main(String[] args) {
 
+  public static void main(String[] args) {
+    
     mall = new Mall("Mall of malls", "Los Angeles, California, USA.");
     scanner = new Scanner(System.in);
 
@@ -72,6 +73,14 @@ public class App {
       case Search:
         findMagasin();
         break;
+
+      case Update:
+        updateMagasin();
+        break;
+
+      // case Remove:
+      //   removeMagasin();
+      //   break;
 
       default:
         break;
@@ -138,7 +147,71 @@ public class App {
   }
 
   static void findMagasin() {
+    System.out.println("-- Find Magasin -- ");
+    System.out.println("-- Choose a way to search ('Number', 'Name') -- ");
+    String outSearch = scanner.next();
 
+    switch (outSearch) {
+      case "Number":
+        System.out.print("-- Enter the number you wish to search: --");
+        int Num = scanner.nextInt();
+        searchNumber(Num);
+        break;
+    
+      case "Name":
+        System.out.print("-- Enter the name you wish to search: --");
+        String Name = scanner.next() + scanner.nextLine();
+        searchName(Name);
+        break;
+      default:
+        System.out.println("-- Not found! --");
+        break;
+    }
+  }
+
+  static Magasin searchName(String name)
+  {
+    for (Magasin magasin : mall.getMagasinsList()) 
+    {
+      if (magasin.getNom().equalsIgnoreCase(name))
+        return magasin;
+    }
+    return null;
+  }
+
+  static Magasin searchNumber(int number)
+  {
+    for (Magasin magasin : mall.getMagasinsList()) 
+    {
+      if (magasin.getNumero()==number)
+        return magasin;
+    }
+    return null;
+  }
+
+  static Magasin updateMagasin()
+  {
+    System.out.println("-- Update Magasin -- ");
+
+    //call method findMagasin() to find the store :
+    findMagasin(); // return store;
+
+    System.out.println("-- give me the new name -- ");
+    String nom = scanner.next() + scanner.nextLine();
+
+    System.out.println("-- give me the new superficie -- ");
+    float superficie = scanner.nextFloat();
+
+    System.out.println("-- give me the new motant -- ");
+    float motant = scanner.nextFloat();
+
+    System.out.println("-- choose a new type ('vetement', 'ameublement', 'chaussure') -- ");
+    String magasinType = scanner.next();
+
+  //we take the store and modify it
+  //to be continued.. 
+
+    return null;
   }
 
   static void printMagasin(Magasin magasin) {
@@ -168,5 +241,4 @@ public class App {
     printEnum(ChaussureMagasinType.Sport);
     printEnum(ChaussureMagasinType.Ville);
   }
-
 }
