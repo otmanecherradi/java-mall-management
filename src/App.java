@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class App {
 
@@ -7,9 +9,8 @@ public class App {
 
   static MenuOptions menuOption;
 
-
   public static void main(String[] args) {
-    
+
     mall = new Mall("Mall of malls", "Los Angeles, California, USA.");
     scanner = new Scanner(System.in);
 
@@ -19,7 +20,9 @@ public class App {
 
       do {
         showMenu();
+
         menuOption = getOption();
+
         dispatchAction(menuOption);
       } while (!menuOption.equals(MenuOptions.Quit));
 
@@ -78,9 +81,9 @@ public class App {
         updateMagasin();
         break;
 
-      // case Remove:
-      //   removeMagasin();
-      //   break;
+      case Remove:
+        removeMagasin();
+        break;
 
       default:
         break;
@@ -96,8 +99,8 @@ public class App {
     System.out.println("-- give me the superficie -- ");
     float superficie = scanner.nextFloat();
 
-    System.out.println("-- give me the motant -- ");
-    float motant = scanner.nextFloat();
+    System.out.println("-- give me the montant -- ");
+    float montant = scanner.nextFloat();
 
     System.out.println("-- choose a type ('vetement', 'ameublement', 'chaussure') -- ");
     String magasinType = scanner.next();
@@ -110,21 +113,21 @@ public class App {
         printMagasinVetementSpecialite();
 
         MagasinVetementSpecialite specialite = MagasinVetementSpecialite.valueOf(scanner.next());
-        m = new VetementMagasin(nom, superficie, motant, specialite);
+        m = new VetementMagasin(nom, superficie, montant, specialite);
         break;
       case "ameublement":
         System.out.println("-- give me the categorie -- ");
         printAmeublementMagasinCategorie();
 
         AmeublementMagasinCategorie categorie = AmeublementMagasinCategorie.valueOf(scanner.next());
-        m = new AmeublementMagasin(nom, superficie, motant, categorie);
+        m = new AmeublementMagasin(nom, superficie, montant, categorie);
         break;
       case "chaussure":
         System.out.println("-- give me the categorie -- ");
         printChaussureMagasinType();
 
         ChaussureMagasinType type = ChaussureMagasinType.valueOf(scanner.next());
-        m = new ChaussureMagasin(nom, superficie, motant, type);
+        m = new ChaussureMagasin(nom, superficie, montant, type);
         break;
       default:
         System.out.println("-- wrong type --");
@@ -147,74 +150,161 @@ public class App {
   }
 
   static void findMagasin() {
-    System.out.println("-- Find Magasin -- ");
-    System.out.println("-- Choose a way to search ('Number', 'Name') -- ");
-    String outSearch = scanner.next();
+    System.out.println("-- find magasin -- ");
 
-    switch (outSearch) {
-      case "Number":
-        System.out.print("-- Enter the number you wish to search: --");
-        int Num = scanner.nextInt();
-        searchNumber(Num);
+    System.out.println("-- choose a criteria ('id', 'name') -- ");
+    String criteria = scanner.next();
+
+    Magasin m = null;
+
+    switch (criteria) {
+      case "id":
+        System.out.println("-- give me the id -- ");
+        int id = scanner.nextInt();
+
+        m = getMagasinById(id);
         break;
-    
-      case "Name":
-        System.out.print("-- Enter the name you wish to search: --");
-        String Name = scanner.next() + scanner.nextLine();
-        searchName(Name);
+      case "name":
+        System.out.println("-- give me the name -- ");
+        String name = scanner.next() + scanner.nextLine();
+
+        m = getMagasinByName(name);
         break;
       default:
-        System.out.println("-- Not found! --");
+        System.out.println("-- wrong criteria --");
         break;
     }
-  }
 
-  static Magasin searchName(String name)
-  {
-    for (Magasin magasin : mall.getMagasinsList()) 
-    {
-      if (magasin.getNom().equalsIgnoreCase(name))
-        return magasin;
+    if (m != null) {
+      printMagasin(m);
     }
-    return null;
   }
 
-  static Magasin searchNumber(int number)
-  {
-    for (Magasin magasin : mall.getMagasinsList()) 
-    {
-      if (magasin.getNumero()==number)
-        return magasin;
+  static void updateMagasin() {
+    System.out.println("-- update magasin -- ");
+
+    System.out.println("-- find magasin first, choose a criteria ('id', 'name') -- ");
+    String criteria = scanner.next();
+
+    Magasin m = null;
+
+    switch (criteria) {
+      case "id":
+        System.out.println("-- give me the id -- ");
+        int id = scanner.nextInt();
+
+        m = getMagasinById(id);
+        break;
+      case "name":
+        System.out.println("-- give me the name -- ");
+        String name = scanner.next() + scanner.nextLine();
+
+        m = getMagasinByName(name);
+        break;
+      default:
+        System.out.println("-- wrong criteria --");
+        break;
     }
-    return null;
+
+    if (m != null) {
+      printMagasin(m);
+
+      System.out.println("-- give me the name -- ");
+      String nom = scanner.next() + scanner.nextLine();
+
+      if (!m.getNom().equals(nom)) {
+        m.setNom(nom);
+      }
+
+      System.out.println("-- give me the superficie -- ");
+      float superficie = scanner.nextFloat();
+
+      if (m.getSuperficie() != superficie) {
+        m.setSuperficie(superficie);
+      }
+
+      System.out.println("-- give me the montant -- ");
+      float montant = scanner.nextFloat();
+
+      if (m.getMontant() != montant) {
+        m.setMontant(montant);
+      }
+
+      if (m instanceof VetementMagasin) {
+        System.out.println("-- give me the specialite -- ");
+        printMagasinVetementSpecialite();
+
+        MagasinVetementSpecialite specialite = MagasinVetementSpecialite.valueOf(scanner.next());
+        ((VetementMagasin) m).setSpecialite(specialite);
+      }
+
+      if (m instanceof AmeublementMagasin) {
+        System.out.println("-- give me the categorie -- ");
+        printAmeublementMagasinCategorie();
+
+        AmeublementMagasinCategorie categorie = AmeublementMagasinCategorie.valueOf(scanner.next());
+        ((AmeublementMagasin) m).setCategorie(categorie);
+      }
+
+      if (m instanceof ChaussureMagasin) {
+        System.out.println("-- give me the categorie -- ");
+        printChaussureMagasinType();
+
+        ChaussureMagasinType type = ChaussureMagasinType.valueOf(scanner.next());
+        ((ChaussureMagasin) m).setType(type);
+      }
+
+      System.out.println("-- Magasin updated successfully --");
+    }
   }
 
-  static Magasin updateMagasin()
-  {
-    System.out.println("-- Update Magasin -- ");
+  static void removeMagasin() {
+    System.out.println("-- remove magasin -- ");
 
-    //call method findMagasin() to find the store :
-    findMagasin(); // return store;
+    System.out.println("-- choose a criteria ('id', 'name') -- ");
+    String criteria = scanner.next();
 
-    System.out.println("-- give me the new name -- ");
-    String nom = scanner.next() + scanner.nextLine();
+    Magasin m = null;
 
-    System.out.println("-- give me the new superficie -- ");
-    float superficie = scanner.nextFloat();
+    switch (criteria) {
+      case "id":
+        System.out.println("-- give me the id -- ");
+        int id = scanner.nextInt();
 
-    System.out.println("-- give me the new motant -- ");
-    float motant = scanner.nextFloat();
+        m = getMagasinById(id);
+        break;
+      case "name":
+        System.out.println("-- give me the name -- ");
+        String name = scanner.next() + scanner.nextLine();
 
-    System.out.println("-- choose a new type ('vetement', 'ameublement', 'chaussure') -- ");
-    String magasinType = scanner.next();
+        m = getMagasinByName(name);
+        break;
+      default:
+        System.out.println("-- wrong criteria --");
+        break;
+    }
 
-  //we take the store and modify it
-  //to be continued.. 
+    if (m != null) {
+      mall.getMagasinsList().remove(m);
 
-    return null;
+      System.out.println("-- Magasin removed successfully --");
+    }
+  }
+
+  static Magasin getMagasinById(int id) {
+    ArrayList lst = (ArrayList) mall.getMagasinsList().stream().filter(m -> m.getNumero() == id)
+        .collect(Collectors.toList());
+    return lst.size() > 0 ? (Magasin) lst.get(0) : null;
+  }
+
+  static Magasin getMagasinByName(String name) {
+    ArrayList lst = (ArrayList) mall.getMagasinsList().stream().filter(m -> m.getNom().equals(name))
+        .collect(Collectors.toList());
+    return lst.size() > 0 ? (Magasin) lst.get(0) : null;
   }
 
   static void printMagasin(Magasin magasin) {
+    System.out.println("-- Magasin --");
     System.out.println(" - Numero : " + magasin.getNumero());
     System.out.println(" - Name : " + magasin.getNom());
     System.out.println(" - Superficie : " + magasin.getSuperficie() + "m^2");
